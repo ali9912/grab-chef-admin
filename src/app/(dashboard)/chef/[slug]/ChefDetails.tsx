@@ -12,7 +12,7 @@ import { BASE_API_URL } from '@/common/constants';
 import { toast } from 'sonner';
 
 const ChefDetails = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<any>(null);
   const [chefEvents, setChefEvents] = useState<any[]>([]);
   const [chefRevenue, setChefRevenue] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const ChefDetails = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [chefId]);
 
   const getChefRevenue = useCallback(async () => {
     try {
@@ -54,7 +54,7 @@ const ChefDetails = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [chefId]);
 
   const getChefEvents = useCallback(async () => {
     try {
@@ -73,26 +73,36 @@ const ChefDetails = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [chefId]);
 
   useEffect(() => {
-    getChef();
-    getChefEvents();
-    getChefRevenue();
-  }, []);
+    if (chefId) {
+      getChef();
+      getChefEvents();
+      getChefRevenue();
+    }
+  }, [chefId, getChef, getChefEvents, getChefRevenue]);
+
+  if (loading) {
+    return (
+      <div className='min-h-screen bg-gray-50 p-6 flex items-center justify-center'>
+        <div className='text-lg'>Loading chef details...</div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen bg-gray-50 p-6'>
       <div className=' space-y-6'>
         {/* Header */}
         <div className='flex items-center justify-between mb-8'>
-          <h1 className='text-4xl font-bold text-gray-900'>Chef</h1>
+          <h1 className='text-4xl font-bold text-gray-900'>Chef Details</h1>
           <div className='text-lg text-gray-500'>Chef / Chef</div>
         </div>
 
         {/* Top Row */}
         <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-          <ChefBanner />
+          <ChefBanner chef={data} />
           <RevenueChart chefRevenue={chefRevenue}/>
         </div>
 

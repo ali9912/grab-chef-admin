@@ -38,13 +38,13 @@ const TopRatedChefs = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-lg font-medium'>Top Rated Chefs.</CardTitle>
+        <CardTitle className='text-lg font-medium'>Top Rated Chefs</CardTitle>
         <p className='text-sm text-muted-foreground'>
           Lorem ipsum dolor sit amet, consectetur
         </p>
       </CardHeader>
       <CardContent className='space-y-4'>
-        {data.map((chef, index) => (
+        {data.map((chef:any, index) => (
           <div
             key={chef._id}
             className='flex justify-between items-center gap-3'
@@ -55,11 +55,11 @@ const TopRatedChefs = () => {
 
             <div className='flex-1'>
               <div className='font-medium text-lg'>
-                {chef.userId?.firstName + ' ' + chef.userId?.firstName}
+                {`${chef.userId?.firstName} ${chef.userId?.lastName}`}
               </div>
               {/* <p className='text-sm font-bold text-muted-foreground'>$56</p> */}
               <p className='text-sm text-muted-foreground'>
-                Order {chef?.completedOrders}
+                Orders: {chef?.completedOrders}
               </p>
             </div>
             <Avatar>

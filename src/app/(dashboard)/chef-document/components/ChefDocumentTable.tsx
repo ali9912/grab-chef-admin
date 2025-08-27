@@ -17,7 +17,8 @@ import { toast } from 'sonner';
 interface ChefDocument {
   id: string;
   avatar: string;
-  document: string;
+  idCard: string;
+  certificates: string;
   joinDate: string;
   chefName: string;
   location: string;
@@ -38,9 +39,11 @@ const ChefDocumentTable = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
     
-      setData(response?.data?.chef);
+      console.log('API Response:', response?.data);
+      setData(response?.data?.chef || []);
     } catch (error: any) {
-      toast(error?.message);
+      console.error('Error fetching chefs:', error);
+      toast(error?.message || 'Failed to fetch chefs');
     } finally {
       setLoading(false);
     }
@@ -48,11 +51,12 @@ const ChefDocumentTable = () => {
 
   useEffect(() => {
     getChefs();
-  }, []);
+  }, [getChefs]);
 
   const handleViewDetails = (documentId: string) => {
     const chef = data.find(doc => doc?._id === documentId);
     if (chef) {
+      console.log('Selected Chef:', chef);
       setSelectedChef(chef);
       setIsProfileOpen(true);
     }
@@ -62,19 +66,40 @@ const ChefDocumentTable = () => {
     console.log('Delete document:', documentId);
   };
 
+  if (loading) {
+    return (
+      <div className='w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
+        <div className='flex items-center justify-center'>
+          <div className='text-lg'>Loading chef documents...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className='w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
+        <div className='flex items-center justify-center'>
+          <div className='text-lg text-gray-500'>No chef documents found</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='w-full bg-white rounded-lg shadow-sm border border-gray-200'>
       {/* Header */}
 
       {/* Scrollable Table Container */}
       <div className='w-full overflow-x-auto'>
-        <div className='min-w-[1050px]'>
+        <div className='min-w-[1300px]'>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className='w-[120px]'></TableHead>
                 <TableHead className='w-[120px]'>Chef ID</TableHead>
-                <TableHead className='w-[250px]'>Chef Document</TableHead>
+                <TableHead className='w-[250px]'>ID Card</TableHead>
+                <TableHead className='w-[250px]'>Certificates</TableHead>
                 <TableHead className='w-[200px]'>Join Date</TableHead>
                 <TableHead className='w-[150px]'>Chef Name</TableHead>
                 <TableHead className='w-[200px]'>Location</TableHead>
@@ -82,24 +107,34 @@ const ChefDocumentTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((doc, index) => (
-                <ChefDocumentCard
-                  key={`${doc._id}-${index}`}
-                  id={doc._id}
-                  avatar={doc?.profilePicture || ''}
-                  document={doc?.certificates}
-                  joinDate={doc?.createdAt}
-                  chefName={`${doc.firstName} ${doc.lastName}`}
-                  location={
-                    Array.isArray(doc.chef?.locations) &&
-                    doc.chef?.locations.length
-                      ? doc.chef?.locations[0].name
-                      : "N'A"
-                  }
-                  onViewDetails={() => handleViewDetails(doc._id)}
-                  onDelete={() => handleDelete(`${doc.id}`)}
-                />
-              ))}
+              {data.map((doc, index) => {
+                console.log(`Chef ${index}:`, {
+                  id: doc._id,
+                  idCard: doc?.chef?.idCard,
+                  certificates: doc?.chef?.certificates,
+                  name: `${doc.firstName} ${doc.lastName}`
+                });
+                
+                return (
+                  <ChefDocumentCard
+                    key={`${doc._id}-${index}`}
+                    id={doc._id}
+                    avatar={doc?.profilePicture || ''}
+                    idCard={doc?.chef?.idCard}
+                    certificates={doc?.chef?.certificates}
+                    joinDate={doc?.createdAt}
+                    chefName={`${doc?.firstName || ''} ${doc?.lastName || ''}`.trim()}
+                    location={
+                      Array.isArray(doc.chef?.locations) &&
+                      doc.chef?.locations.length
+                        ? doc.chef?.locations[0].name
+                        : "N/A"
+                    }
+                    onViewDetails={() => handleViewDetails(doc._id)}
+                    onDelete={() => handleDelete(`${doc.id}`)}
+                  />
+                );
+              })}
             </TableBody>
           </Table>
         </div>

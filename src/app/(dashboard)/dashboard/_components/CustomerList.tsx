@@ -3,32 +3,47 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronDown, MoveDown } from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { getData } from "@/api/api";
-import { urls } from "@/api/urls";
+import { useState } from "react";
+import { useCustomers } from "@/common/contexts/CustomersContext";
 
 const CustomersList = () => {
-  const [customers, setCustomers] = useState([])
-  const [customersShow, setCustomersShow] = useState(5)
+  const { customers, loading, error } = useCustomers();
+  const [customersShow, setCustomersShow] = useState(5);
 
-
-  const getCustomers = async () => {
-    try {
-      const data = await getData(urls.dashboard.getCustomers)
-      console.log(data,'---cutomer data')
-      setCustomers(data?.customers)
-    } catch (error:any) {
-      console.log(error?.message)
-      toast(error?.message)
-    }
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Customers</CardTitle>
+          <p className="text-sm text-muted-foreground">Loading customers...</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="flex items-center gap-3 animate-pulse">
+                <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
-
-
-  useEffect(() => {
-    getCustomers()
-  },[])
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-medium">Customers</CardTitle>
+          <p className="text-sm text-red-500">Error: {error}</p>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -59,9 +74,11 @@ const CustomersList = () => {
         ))}
       </CardContent>
 
-      <div onClick={() => setCustomersShow(prev => prev+5)} className="mx-auto h-4 w-4 shadow-black shadow-2xl rounded-full">
-        <ChevronDown />
-      </div>
+      {customers?.length > customersShow && (
+        <div onClick={() => setCustomersShow(prev => prev+5)} className="mx-auto h-4 w-4 shadow-black shadow-2xl rounded-full cursor-pointer">
+          <ChevronDown />
+        </div>
+      )}
     </Card>
   );
 };

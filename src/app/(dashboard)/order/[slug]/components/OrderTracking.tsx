@@ -24,58 +24,6 @@ const OrderTracking = () => {
     durationMinutes:0
   })
   const params = useParams()
-  const orderData = {
-    orderId: "#001234124",
-    status: "Chef on the way",
-    estimatedTime: "10-14 Min",
-    customer: {
-      name: "Usama Muzamil",
-      phone: "+91 952 66 77",
-      address: "DHA Phase 5 Commercial Bukhari",
-      date: "25 July 2024",
-      time: "17:00"
-    },
-    items: [
-      {
-        id: 1,
-        name: "Chicken curry special with cucumber",
-        category: "MAIN COURSE",
-        quantity: 3,
-        price: 14.99,
-        total: 44.97,
-        rating: 4,
-        reviews: 142,
-        image: "/placeholder.svg?height=60&width=60"
-      },
-      {
-        id: 2,
-        name: "Italiano pizza with garlic",
-        category: "MAIN COURSE",
-        quantity: 1,
-        price: 15.44,
-        total: 15.44,
-        rating: 4,
-        reviews: 156,
-        image: "/placeholder.svg?height=60&width=60"
-      },
-      {
-        id: 3,
-        name: "Watermelon juice with ice",
-        category: "MAIN COURSE",
-        quantity: 1,
-        price: 4.12,
-        total: 4.12,
-        rating: 4,
-        reviews: 456,
-        image: "/placeholder.svg?height=60&width=60"
-      }
-    ],
-    pricing: {
-      subtotal: 1500,
-      deliveryFee: 400,
-      total: 1900
-    }
-  };
 
   const getOrderDetails = async () => {
     try {
