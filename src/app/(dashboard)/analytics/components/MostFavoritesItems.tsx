@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getCookie } from 'cookies-next/client';
 import axios from 'axios';
 import { BASE_API_URL } from '@/common/constants';
+import DownArrowButton from '../../dashboard/_components/DownArrowButton';
 
 interface FavoriteItem {
   id: number;
@@ -17,54 +18,29 @@ interface FavoriteItem {
   interest: number;
   totalSales: string;
   completion: number;
+  category: string;
 }
 
-const categories = [
-  'All Categories',
-  'Main Course',
-  'Pizza',
-  'Drink',
-  'Dessert',
-  'More',
-];
+interface ApiMenuItem {
+  itemName: string;
+  images: string[];
+  price: number;
+  cuisineStyle: string;
+  orders: number;
+  chefName: string;
+}
 
-const favoriteItems: FavoriteItem[] = [
-  {
-    id: 1,
-    name: 'Creamy Parmesan Cheese with Chicken Teriyaki Egg',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    rating: 3,
-    reviews: 454,
-    likes: '256k',
-    interest: 45,
-    totalSales: '6,732',
-    completion: 75,
-  },
-  {
-    id: 2,
-    name: 'Mini Donuts with Variant Topping [Chocolate]',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    rating: 3,
-    reviews: 454,
-    likes: '256k',
-    interest: 26,
-    totalSales: '5,721',
-    completion: 62,
-  },
-  {
-    id: 3,
-    name: 'Cappucino Latte',
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    rating: 3,
-    reviews: 454,
-    likes: '256k',
-    interest: 17,
-    totalSales: '3,515',
-    completion: 52,
-  },
+interface ApiResponse {
+  mostOrderedDishes?: ApiMenuItem[];
+  categories?: string[];
+}
+
+const defaultCategories = [
+  'All Categories',
+  'Pakistani',
+  'Italian',
+  'Chinese',
+  'Indian',
 ];
 
 const CircularProgress = ({ percentage }: { percentage: number }) => {
@@ -90,7 +66,7 @@ const CircularProgress = ({ percentage }: { percentage: number }) => {
           cx='22'
           cy='22'
           r='20'
-          stroke='#ef4444'
+          stroke='url(#gradient)'
           strokeWidth='4'
           fill='transparent'
           strokeDasharray={strokeDasharray}
@@ -98,6 +74,12 @@ const CircularProgress = ({ percentage }: { percentage: number }) => {
           strokeLinecap='round'
           className='transition-all duration-300'
         />
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="#f97316" />
+          </linearGradient>
+        </defs>
       </svg>
       <div className='absolute inset-0 flex items-center justify-center'>
         <span className='text-sm font-semibold text-gray-900'>
@@ -135,11 +117,12 @@ const TrendChart = ({ trend }: { trend: 'up' | 'down' }) => {
 
 const MostFavoritesItems = () => {
   const [activeCategory, setActiveCategory] = useState('All Categories');
-
-  const [data, setData] = useState({});
+  const [data, setData] = useState<ApiResponse>({});
+  const [loading, setLoading] = useState(true);
 
   const getBestSeller = async () => {
     try {
+      setLoading(true);
       const token = getCookie('token');
       const response = await axios.get(
         `${BASE_API_URL}/admin/get-menu-insights`,
@@ -152,6 +135,8 @@ const MostFavoritesItems = () => {
       );
     } catch (error) {
       console.log('ERROR', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -164,7 +149,7 @@ const MostFavoritesItems = () => {
       <span
         key={i}
         className={`text-sm ${
-          i < rating ? 'text-orange-400' : 'text-gray-300'
+          i < rating ? 'text-yellow-400' : 'text-gray-300'
         }`}
       >
         ★
@@ -172,11 +157,68 @@ const MostFavoritesItems = () => {
     ));
   };
 
+  // Get categories from cuisine styles in API data or use defaults
+  const cuisineStyles = data?.mostOrderedDishes?.map(item => item.cuisineStyle || 'Other') || [];
+  const uniqueCuisineStyles = [...new Set(cuisineStyles)];
+  const categories = uniqueCuisineStyles.length > 0 
+    ? ['All Categories', ...uniqueCuisineStyles] 
+    : defaultCategories;
+
+  // Filter items based on active category
+  const filteredItems = data?.mostOrderedDishes?.filter(item => {
+    if (activeCategory === 'All Categories') return true;
+    return (item.cuisineStyle || 'Other') === activeCategory;
+  }) || [];
+
+  // Calculate total orders for percentage calculation
+  const totalOrders = data?.mostOrderedDishes?.reduce((sum, item) => sum + item.orders, 0) || 0;
+
+  if (loading) {
+    return (
+      <Card className='w-full p-6 bg-white rounded-xl'>
+        <div className='mb-6 flex xl:flex-row flex-col justify-between'>
+          <div>
+            <h2 className='text-2xl font-bold text-gray-900 mb-2'>
+              Most Favorites Items
+            </h2>
+            <p className='text-sm text-gray-500 mb-6'>
+              Lorem ipsum dolor sit amet, consectetur
+            </p>
+          </div>
+          <div className='flex flex-wrap gap-4 bg-[#FFF3F0] rounded-3xl h-fit w-fit p-2'>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className='h-8 w-20 bg-gray-200 rounded-full animate-pulse'></div>
+            ))}
+          </div>
+        </div>
+        <div className='space-y-6'>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className='animate-pulse'>
+              <div className='flex items-center gap-6 p-4 rounded-lg'>
+                <div className='w-20 h-20 bg-gray-200 rounded-lg'></div>
+                <div className='flex-1'>
+                  <div className='h-4 bg-gray-200 rounded mb-2'></div>
+                  <div className='h-3 bg-gray-200 rounded w-32 mb-2'></div>
+                  <div className='h-3 bg-gray-200 rounded w-24'></div>
+                </div>
+                <div className='flex gap-8'>
+                  <div className='w-16 h-16 bg-gray-200 rounded'></div>
+                  <div className='w-16 h-16 bg-gray-200 rounded'></div>
+                  <div className='w-16 h-16 bg-gray-200 rounded-full'></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className='w-full p-6 bg-white shadow-lg'>
+    <Card className='w-full p-6 bg-white rounded-xl relative'>
       <div className='mb-6 flex xl:flex-row flex-col justify-between'>
         <div>
-          <h2 className='text-2xl font-semibold text-gray-900 mb-2'>
+          <h2 className='text-2xl font-bold text-gray-900 mb-2'>
             Most Favorites Items
           </h2>
           <p className='text-sm text-gray-500 mb-6'>
@@ -198,7 +240,6 @@ const MostFavoritesItems = () => {
               onClick={() => setActiveCategory(category)}
             >
               {category}
-              {category === 'More' && <ChevronDown className='ml-1 w-4 h-4' />}
             </Button>
           ))}
         </div>
@@ -206,84 +247,78 @@ const MostFavoritesItems = () => {
 
       {/* Items List */}
       <div className='space-y-6'>
-        {data?.mostOrderedDishes &&
-          data?.mostOrderedDishes.length &&
-          data?.mostOrderedDishes.slice(0,5).map(item => (
-            <div
-              key={item._id}
-              className='flex items-center gap-6 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200'
-            >
+        {filteredItems.slice(0, 3).map((item, index) => (
+          <div
+            key={index}
+            className='flex items-center gap-6 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200'
+          >
+            {/* Left Section: Image and Basic Info */}
+            <div className='flex-shrink-0'>
               <img
-                src={item.images && item.images.length && item.images[0]}
+                src={item.images?.[0] || ''}
                 alt={item.itemName}
-                className='w-20 h-20 rounded-lg object-cover flex-shrink-0'
+                className='w-20 h-20 rounded-lg object-cover'
               />
+            </div>
 
-              <div className='flex xl:flex-row w-full justify-between flex-col gap-4 items-start lg:items-center flex-wrap'>
-                <div className='flex-1 min-w-0'>
-                  <h3 className='font-medium text-gray-900 text-base mb-2 line-clamp-2'>
-                    {item.itemName}
-                  </h3>
-                  {/* <div className='flex items-center gap-3 mb-2'>
-                    <div className='flex items-center'>
-                      {renderStars(item.rating)}
-                    </div>
-                    <span className='text-sm text-gray-500'>
-                      ({item.reviews} reviews)
-                    </span>
-                  </div> */}
-                  {/* <div className='flex items-center gap-2'>
-                    <Heart className='w-4 h-4 fill-red-500 text-red-500' />
-                    <span className='text-sm text-gray-600'>
-                      {item.likes} Like it
-                    </span>
-                  </div> */}
+            <div className='flex-1 min-w-0'>
+              <h3 className='font-bold text-gray-900 text-base mb-2 line-clamp-2'>
+                {item.itemName}
+              </h3>
+              <div className='flex items-center gap-3 mb-2'>
+                <div className='flex items-center'>
+                  {renderStars(4)}
                 </div>
-
-                <div className='flex items-center gap-8'>
-                  <div className='text-center flex items-center'>
-                    <TrendChart trend='up' />
-                    <div className='mt-2'>
-                      <div className='text-lg font-bold text-gray-900'>
-                        {43}%
-                      </div>
-                      <div className='text-sm text-gray-500'>Interest</div>
-                    </div>
-                  </div>
-
-                  {/* Total Sales */}
-                  <div className='text-center'>
-                    <div className='flex items-center justify-center mb-2'>
-                      <BarChart3 className='w-6 h-6 text-red-500' />
-                      <div className='text-lg font-bold text-gray-900'>
-                        {item.orders}
-                      </div>
-                    </div>
-                    <div>
-                      <div className='text-sm text-gray-500'>Total Sales</div>
-                    </div>
-                  </div>
-
-                  {/* Progress Circle */}
-                  <div className='text-center'>
-                    <CircularProgress percentage={100} />
-                  </div>
-                </div>
+                <span className='text-sm text-gray-500'>
+                  (454 reviews)
+                </span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Heart className='w-4 h-4 fill-red-500 text-red-500' />
+                <span className='text-sm text-gray-600'>
+                  256k Like it
+                </span>
+              </div>
+              <div className='text-sm text-gray-500 mt-1'>
+                Chef: {item.chefName}
               </div>
             </div>
-          ))}
+
+            {/* Middle Section: Performance Metrics */}
+            <div className='flex items-center gap-8'>
+              {/* Interest */}
+              <div className='text-center flex items-center'>
+                <TrendChart trend='up' />
+                <div className='ml-2'>
+                  <div className='text-lg font-bold text-gray-900'>
+                    45%
+                  </div>
+                  <div className='text-sm text-gray-500'>Interest</div>
+                </div>
+              </div>
+
+              {/* Total Sales */}
+              <div className='text-center'>
+                <div className='flex items-center justify-center mb-2'>
+                  <BarChart3 className='w-6 h-6 text-red-500' />
+                </div>
+                <div className='text-lg font-bold text-gray-900'>
+                  {item.orders.toLocaleString()}
+                </div>
+                <div className='text-sm text-gray-500'>Total Sales</div>
+              </div>
+
+              {/* Progress Circle */}
+              <div className='text-center'>
+                <CircularProgress percentage={totalOrders > 0 ? Math.round((item.orders / totalOrders) * 100) : 0} />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Expand Button */}
-      <div className='flex justify-center mt-6'>
-        <Button
-          variant='ghost'
-          size='sm'
-          className='text-gray-400 hover:text-gray-600'
-        >
-          <ChevronDown className='w-5 h-5' />
-        </Button>
-      </div>
+      <DownArrowButton />
     </Card>
   );
 };

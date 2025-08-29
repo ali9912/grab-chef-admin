@@ -181,7 +181,7 @@ export function AnalyticsBarChart() {
     return (
       <Card>
         <CardHeader className='flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row'>
-          <div className='flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6'>
+          <div className='flex flex-1 flex-col justify-center gap-1 px-6'>
             <CardTitle>Customer Growth</CardTitle>
             <CardDescription>Loading customer data...</CardDescription>
           </div>
@@ -199,7 +199,7 @@ export function AnalyticsBarChart() {
     return (
       <Card>
         <CardHeader className='flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row'>
-          <div className='flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6'>
+          <div className='flex flex-1 flex-col justify-center gap-1 px-6'>
             <CardTitle>Customer Growth</CardTitle>
             <CardDescription className='text-red-500'>Error: {error}</CardDescription>
           </div>
@@ -224,14 +224,14 @@ export function AnalyticsBarChart() {
   return (
     <Card>
       <CardHeader className='flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row'>
-        <div className='flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6'>
+        <div className='flex flex-1 flex-col justify-center gap-1 px-6'>
           <CardTitle>Customer Growth</CardTitle>
           <CardDescription>
             {getTimePeriodDescription()}
           </CardDescription>
         </div>
-        <div className='flex items-center px-6 py-4 sm:px-8 sm:py-6'>
-          <div className='flex rounded-full bg-gray-100 p-1'>
+        <div className='flex items-center px-6 sm:px-8'>
+          <div className='flex rounded-full bg-gray-100 p-1 shadow-md'>
             {(['monthly', 'weekly', 'daily'] as const).map((period) => (
               <button
                 key={period}

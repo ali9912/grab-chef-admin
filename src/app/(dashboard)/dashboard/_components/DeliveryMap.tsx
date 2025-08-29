@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Ellipsis, MoreHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -33,15 +33,12 @@ interface DeliveryMapsProps {
 const DeliveryMaps = ({ data }: DeliveryMapsProps) => {
   return (
     <div>
-      <div className='relative rounded-lg mb-4 overflow-hidden'>
-        <div className='flex justify-between items-center'>
-          <div>
-            <p className='text-2xl font-bold'>Delivery Maps</p>
-            <p className='text-sm text-gray-500'>Lorem ipsum dolor sit amet, consectetur</p>
-          </div>
-          <div>
-            <Ellipsis />
-          </div>
+      <div className='relative overflow-hidden'>
+        <div className='flex flex-1 flex-col justify-center gap-1'>
+          <CardTitle>Delivery Maps</CardTitle>
+          <CardDescription>
+            Lorem ipsum dolor sit amet, consectetur
+          </CardDescription>
         </div>
         {/* Simple network visualization */}
       </div>

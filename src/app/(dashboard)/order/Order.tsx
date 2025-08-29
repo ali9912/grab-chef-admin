@@ -153,7 +153,7 @@ const Orders = () => {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-icon-hex h-4 w-4" />
           <Input
-            placeholder="Search by customer name or location"
+            placeholder="Search here"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pr-10 bg-gray-50 rounded-4xl border-gray-200"
@@ -164,14 +164,14 @@ const Orders = () => {
           <div className="relative">
             <Button 
               variant="outline" 
-              className="flex rounded-4xl items-center space-x-2"
+              className="flex rounded-4xl items-center space-x-2 cursor-pointer"
               onClick={() => setShowFilterPanel(!showFilterPanel)}
             >
               <Calendar className="h-4 w-4 text-icon-hex" />
               <span className="flex items-center gap-2">Filter <ArrowDown className="text-icon-hex" /></span>
             </Button>
             {getAppliedFiltersCount() > 0 && (
-              <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white">
+              <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white rounded-full">
                 {getAppliedFiltersCount()}
               </Badge>
             )}

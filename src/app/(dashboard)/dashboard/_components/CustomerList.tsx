@@ -1,21 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronDown, MoveDown } from "lucide-react";
-import { useState } from "react";
 import { useCustomers } from "@/common/contexts/CustomersContext";
+import DownArrowButton from "./DownArrowButton";
+import { Plus } from "lucide-react";
 
 const CustomersList = () => {
   const { customers, loading, error } = useCustomers();
-  const [customersShow, setCustomersShow] = useState(5);
 
   if (loading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Customers</CardTitle>
-          <p className="text-sm text-muted-foreground">Loading customers...</p>
+          <CardTitle>Customers</CardTitle>
+          <CardDescription>Loading customers...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -38,26 +37,26 @@ const CustomersList = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Customers</CardTitle>
-          <p className="text-sm text-red-500">Error: {error}</p>
+          <CardTitle>Customers</CardTitle>
+          <CardDescription className="text-sm text-red-500">Error: {error}</CardDescription>
         </CardHeader>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-lg font-medium">Customers</CardTitle>
-          <p className="text-sm text-muted-foreground">Lorem ipsum dolor</p>
+        <div className='flex flex-1 flex-col justify-center gap-1'>
+          <CardTitle>Customers</CardTitle>
+          <CardDescription>Lorem ipsum dolor</CardDescription>
         </div>
-        <Button size="icon" className="bg-red-500 hover:bg-red-600 rounded-full">
-          <span className="text-white text-2xl">+</span>
+        <Button size="icon" className="bg-red-500 hover:bg-red-600 rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
+          <Plus className="text-white scale-150" />
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        {customers?.length > 0 && customers?.slice(0, customersShow).map((customer:any) => (
+        {customers?.length > 0 && customers?.slice(0, 7).map((customer:any) => (
           <div key={customer?._id} className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
               <AvatarFallback className="bg-gray-100">
@@ -74,11 +73,7 @@ const CustomersList = () => {
         ))}
       </CardContent>
 
-      {customers?.length > customersShow && (
-        <div onClick={() => setCustomersShow(prev => prev+5)} className="mx-auto h-4 w-4 shadow-black shadow-2xl rounded-full cursor-pointer">
-          <ChevronDown />
-        </div>
-      )}
+      <DownArrowButton onClick={() => {}} />
     </Card>
   );
 };

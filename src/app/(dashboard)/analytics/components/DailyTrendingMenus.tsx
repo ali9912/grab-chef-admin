@@ -5,68 +5,29 @@ import axios from 'axios';
 import { getCookie } from 'cookies-next/client';
 import { useEffect, useState } from 'react';
 
-interface TrendingItem {
+
+
+interface ApiMenuItem {
   id: number;
-  name: string;
-  description: string;
+  itemName: string;
   price: number;
-  image: string;
-  orders: string;
+  images: string[];
+  orders?: number;
 }
 
-const trendingItems: TrendingItem[] = [
-  {
-    id: 1,
-    name: 'Watermelon juice with ice',
-    description: 'Order 67x',
-    price: 4.8,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    orders: '67x',
-  },
-  {
-    id: 2,
-    name: 'Chicken curry special with cucumber',
-    description: 'Order 89x',
-    price: 5.6,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    orders: '89x',
-  },
-  {
-    id: 3,
-    name: 'Italiano pizza with garlic',
-    description: 'Order 59x',
-    price: 12.6,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    orders: '59x',
-  },
-  {
-    id: 4,
-    name: 'Tuna soup spinach with himalaya salt',
-    description: 'Order 45x',
-    price: 3.6,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    orders: '45x',
-  },
-  {
-    id: 5,
-    name: 'Medium Spicy Spaghetti Italiano',
-    description: 'Order 48x',
-    price: 4.2,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqfyojxMBijikrAeZvgsCyIDMD-rCktUBPw&s',
-    orders: '48x',
-  },
-];
+interface ApiResponse {
+  mostOrderedDishes?: ApiMenuItem[];
+}
+
+
 
 const DailyTrendingMenus = () => {
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState<ApiResponse>({});
+  const [loading, setLoading] = useState(true);
 
   const getBestSeller = async () => {
     try {
+      setLoading(true);
       const token = getCookie('token');
       const response = await axios.get(
         `${BASE_API_URL}/admin/get-menu-insights`,
@@ -79,50 +40,87 @@ const DailyTrendingMenus = () => {
       );
     } catch (error) {
       console.log('ERROR', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getBestSeller();
   }, []);
+
+  const displayItems = data?.mostOrderedDishes?.slice(0, 5) || [];
+
+  if (loading) {
+    return (
+      <Card className='w-full p-6 bg-white rounded-xl'>
+        <div className='mb-6'>
+          <h2 className='text-xl font-bold text-gray-900 mb-1'>
+            Daily Trending Menus
+          </h2>
+          <p className='text-sm text-gray-500'>Lorem ipsum dolor</p>
+        </div>
+        <div className='space-y-4'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className='animate-pulse'>
+              <div className='flex items-center space-x-3'>
+                <div className='w-12 h-12 bg-gray-200 rounded-lg'></div>
+                <div className='flex-1'>
+                  <div className='h-4 bg-gray-200 rounded mb-1'></div>
+                  <div className='h-3 bg-gray-200 rounded w-16'></div>
+                </div>
+                <div className='h-4 bg-gray-200 rounded w-12'></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className='w-full max-w-md mx-auto p-6 bg-white shadow-lg'>
-      <div>
-        <h2 className='text-xl font-semibold text-gray-900 mb-1'>
+    <Card className='w-full p-6 bg-white rounded-xl'>
+      <div className='mb-6'>
+        <h2 className='text-xl font-bold text-gray-900 mb-1'>
           Daily Trending Menus
         </h2>
         <p className='text-sm text-gray-500'>Lorem ipsum dolor</p>
       </div>
 
-      <div className='space-y-4'>
-        {data?.mostOrderedDishes &&
-          data?.mostOrderedDishes.length &&
-          data?.mostOrderedDishes.map((item:any) => (
-            <div
-              key={item.id}
-              className='flex items-center space-x-3 hover:bg-gray-50 transition-colors duration-200 cursor-pointer rounded-lg p-2'
-            >
-              <img
-                src={item.images && item.images.length && item.images[0]}
-                alt={item.itemName}
-                className='w-12 h-12 rounded-lg object-cover'
-              />
-              <div className='mt-4'>
-                <div className='flex-1'>
-                  <h3 className='font-medium text-gray-900 text-sm leading-tight'>
-                    {item.itemName}
-                  </h3>
-                </div>
-                <div className='w-full flex justify-between items-center gap-3'>
-                  <span className='text-sm font-semibold text-gray-900'>
-                    ${item.price.toFixed(1)}
-                  </span>
-                  <p className='text-xs text-gray-500 mt-1'>{"   "}</p>
-                  <p className='text-xs text-gray-500 mt-1'>{item.orders}x</p>
-                </div>
+      <div className='space-y-0'>
+        {displayItems.map((item: ApiMenuItem, index: number) => (
+          <div key={item.id || index}>
+            <div className='flex items-center space-x-3 py-3 hover:bg-gray-50 transition-colors duration-200 cursor-pointer rounded-lg px-2'>
+              <div className='flex-shrink-0'>
+                <img
+                  src={item.images?.[0] || ''}
+                  alt={item.itemName}
+                  className='w-12 h-12 rounded-lg object-cover'
+                />
+              </div>
+              
+              <div className='flex-1 min-w-0'>
+                <h3 className='font-medium text-gray-900 text-sm leading-tight mb-1'>
+                  {item.itemName}
+                </h3>
+                <p className='text-xs text-gray-500'>
+                  Order {item.orders || 0}x
+                </p>
+              </div>
+              
+              <div className='flex-shrink-0'>
+                <span className='font-bold text-gray-900 text-sm'>
+                  PKR {item.price?.toFixed(1) || '0.0'}
+                </span>
               </div>
             </div>
-          ))}
+            
+            {/* Divider line between items (except for the last item) */}
+            {index < displayItems.length - 1 && (
+              <div className='border-b border-gray-100'></div>
+            )}
+          </div>
+        ))}
       </div>
     </Card>
   );

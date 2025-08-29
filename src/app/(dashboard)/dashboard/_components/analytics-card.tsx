@@ -1,6 +1,5 @@
 'use client';
 
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -20,7 +19,7 @@ export function AnalyticsCard({ data }: { data: AnalyticsCardProps }) {
   return (
     <div
       className={cn(
-        'flex items-center justify-between shadow-md',
+        'flex items-center justify-between shadow-sm border',
         'bg-[FFECEC] rounded-[20px] px-6 py-4 min-h-[148px]',
       )}
     >
@@ -30,17 +29,24 @@ export function AnalyticsCard({ data }: { data: AnalyticsCardProps }) {
       </div>
       <div className='relative'>
         <svg
-          className='w-16 h-16 transform -rotate-90'
+          className='w-24 h-24 transform -rotate-90'
           viewBox='0 0 50 50'
         >
+          <defs>
+            <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#ff390b" />
+              <stop offset="50%" stopColor="#FF6B35" />
+              <stop offset="100%" stopColor="#FFC41F" />
+            </linearGradient>
+          </defs>
           {/* Background circle */}
           <circle
             cx='25'
             cy='25'
             r='20'
             fill='none'
-            stroke='#f1f5f9'
-            strokeWidth='4'
+            stroke='#ffecec'
+            strokeWidth='5'
           />
           {/* Progress circle */}
           <circle
@@ -48,25 +54,27 @@ export function AnalyticsCard({ data }: { data: AnalyticsCardProps }) {
             cy='25'
             r='20'
             fill='none'
-            stroke={'#FFC41F'}
-            strokeWidth='4'
+            stroke="url(#progressGradient)"
+            strokeWidth='5'
             strokeLinecap='round'
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             className='transition-all duration-300 ease-in-out'
           />
         </svg>
-        <div className='absolute inset-0 flex items-center justify-center'>
-          <div className={'p-2 rounded-full bg-white'}>
-            <Image
-              src={data.image}
-              alt={data.title}
-              width={30}
-              height={30}
-              className='object-contain max-h-[30px] max-w-[30px] h-auto w-auto'
-            />
+        {data.image && (
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <div className={'p-2 rounded-full bg-white'}>
+              <Image
+                src={data.image}
+                alt={data.title}
+                width={30}
+                height={30}
+                className='object-contain max-h-[30px] max-w-[30px] h-auto w-auto'
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -54,18 +54,18 @@ export const StatCard: React.FC<StatCardProps> = ({
         </defs>
         <Pie
           data={data}
-          innerRadius={20}
+          innerRadius={21.5}
           outerRadius={30}
           startAngle={90}
           endAngle={-270}
           paddingAngle={0}
+          cornerRadius={4}
           dataKey='value'
         >
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill='url(#colorUv)'
-              //   fill={index === 0 ? COLORS[percentage < 50 ? 0 : 1] : "#fceeee"}
+              fill={index === 0 ? 'url(#colorUv)' : '#fceeee'}
             />
           ))}
         </Pie>
@@ -96,22 +96,22 @@ const SummaryCards = () => {
       <StatCard
         title='Menus Today'
         value={data?.totalMenusToday || 0}
-        percentage={data?.totalMenusToday || 0}
+        percentage={77}
       />
       <StatCard
         title='Customer Today'
         value={data?.totalCustomersToday || 0}
-        percentage={data?.totalCustomersToday || 0}
+        percentage={53}
       />
       <StatCard
         title='Total Revenue'
         value={`${data?.totalRevenue || 0} PKR`}
-        percentage={100}
+        percentage={88}
       />
       <StatCard
         title='Chefs Today'
         value={data?.totalChefsToday || 0}
-        percentage={data?.totalChefsToday || 0}
+        percentage={25}
       />
     </div>
   );

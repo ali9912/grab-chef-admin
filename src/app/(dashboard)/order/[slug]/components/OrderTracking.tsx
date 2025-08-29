@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { getData } from '@/api/api';
 import { urls } from '@/api/urls';
 import { useParams } from 'next/navigation';
+import CustomerFavoriteChefs from '@/app/(dashboard)/dashboard/_components/CustomerFavoriteChefs';
 
 const OrderTracking = () => {
   const [details, setDetails ] = useState<any>(null)
@@ -24,7 +25,7 @@ const OrderTracking = () => {
     durationMinutes:0
   })
   const params = useParams()
-
+  const [customerFavoriteChefs, setCustomerFavoriteChefs] = useState<any>([])
   const getOrderDetails = async () => {
     try {
       if(params?.slug){
@@ -32,6 +33,7 @@ const OrderTracking = () => {
         const attendenceData = await getData(urls.order?.getAttendence(params?.slug as string))
         setAttendence(attendenceData)
         setDetails(data?.event)
+        setCustomerFavoriteChefs(data?.customerFavoriteChefs)
       }
     } catch (error:any) {
       console.log(error?.message)
@@ -70,7 +72,7 @@ const OrderTracking = () => {
             {/* Delivery Map */}
             <div>
               <div className="p-0">
-                <DeliveryMap data={attendence?.attendance}/>
+                <DeliveryMap data={attendence?.attendance} address={details?.fullAddress}/>
               </div>
             </div>
 
@@ -107,10 +109,8 @@ const OrderTracking = () => {
             {/* Estimated Time */}
             <CustomerOrderCard data={details}/>
 
-            {/* Order Items */}
-
             {/* Order Analytics */}
-            {/* <OrderAnalytics data={details} /> */}
+            <CustomerFavoriteChefs customerFavoriteChefs={customerFavoriteChefs} />
           </div>
         </div>
       </div>

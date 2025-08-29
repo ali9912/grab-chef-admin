@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useCallback, useEffect, useState } from 'react';
 import { getCookie } from 'cookies-next/client';
@@ -37,11 +37,13 @@ const TopRatedChefs = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className='text-lg font-medium'>Top Rated Chefs</CardTitle>
-        <p className='text-sm text-muted-foreground'>
-          Lorem ipsum dolor sit amet, consectetur
-        </p>
+      <CardHeader className='flex flex-row items-center justify-between'>
+        <div className='flex flex-1 flex-col justify-center gap-1'>
+          <CardTitle>Top Rated Chefs</CardTitle>
+          <CardDescription>
+            Lorem ipsum dolor sit amet, consectetur
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className='space-y-4'>
         {data.map((chef:any, index) => (
