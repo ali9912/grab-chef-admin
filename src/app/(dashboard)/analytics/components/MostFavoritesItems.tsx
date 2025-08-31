@@ -119,6 +119,11 @@ const MostFavoritesItems = () => {
   const [activeCategory, setActiveCategory] = useState('All Categories');
   const [data, setData] = useState<ApiResponse>({});
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   const getBestSeller = async () => {
     try {
@@ -173,6 +178,9 @@ const MostFavoritesItems = () => {
   // Calculate total orders for percentage calculation
   const totalOrders = data?.mostOrderedDishes?.reduce((sum, item) => sum + item.orders, 0) || 0;
 
+  // Check if there are more items to show
+  const hasMoreItems = filteredItems.length > 3;
+
   if (loading) {
     return (
       <Card className='w-full p-6 bg-white rounded-xl'>
@@ -215,8 +223,8 @@ const MostFavoritesItems = () => {
   }
 
   return (
-    <Card className='w-full p-6 bg-white rounded-xl relative'>
-      <div className='mb-6 flex xl:flex-row flex-col justify-between'>
+    <Card className='w-full bg-white rounded-xl relative'>
+      <div className='mb-6 flex xl:flex-row flex-col justify-between px-6'>
         <div>
           <h2 className='text-2xl font-bold text-gray-900 mb-2'>
             Most Favorites Items
@@ -246,8 +254,8 @@ const MostFavoritesItems = () => {
       </div>
 
       {/* Items List */}
-      <div className='space-y-6'>
-        {filteredItems.slice(0, 3).map((item, index) => (
+      <div className='space-y-6 max-h-175 overflow-y-scroll px-6'>
+        {(showAll ? filteredItems : filteredItems.slice(0, 3)).map((item, index) => (
           <div
             key={index}
             className='flex items-center gap-6 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200'
@@ -318,7 +326,7 @@ const MostFavoritesItems = () => {
       </div>
 
       {/* Expand Button */}
-      <DownArrowButton />
+      {hasMoreItems && <DownArrowButton onClick={toggleShowAll} active={showAll} />}
     </Card>
   );
 };

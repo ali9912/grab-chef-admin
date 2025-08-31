@@ -95,9 +95,13 @@ const UpcomingShipping = () => {
   const displayOrders = showAll ? pendingOrders : pendingOrders.slice(0, 3);
   const hasMoreOrders = pendingOrders.length > 3;
 
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
+
   return (
     <Card className="relative">
-      <CardContent className='space-y-6 px-6'>
+      <CardContent className='space-y-6'>
         <DeliveryMaps data={data} />
         
         {/* Upcoming Shipping Schedule Section */}
@@ -106,62 +110,60 @@ const UpcomingShipping = () => {
             <Plane className='h-12 w-12 fill-red-500' strokeWidth={0} />
             <h3 className='text-lg font-semibold text-gray-900'>Upcoming Shipping Schedule</h3>
           </div>
-          
-          <div className='space-y-4'>
-            {displayOrders &&
-              displayOrders.length > 0 &&
-              displayOrders
-                .map((item, index) => (
-                <div
-                  key={item._id || index}
-                  className='flex items-start gap-4'
-                >
-                  {/* Customer Avatar */}
-                  <Avatar className='w-12 h-12 flex-shrink-0'>
-                    <AvatarFallback className='bg-gray-100 text-gray-600 text-sm font-medium'>
-                      {getCustomerInitials(item.customer?.firstName, item.customer?.lastName)}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  {/* Customer Details and Address Container */}
-                  <div className='flex-1 flex justify-between items-start min-w-0'>
-                    {/* Customer Details */}
-                    <div className='flex-1 min-w-0 pr-4'>
-                      <div className='flex items-center gap-2 mb-1 flex-wrap'>
-                        <span className='font-bold text-gray-900 break-words'>
-                          {item.customer?.firstName} {item.customer?.lastName}
-                        </span>
-                        <span className='text-sm text-red-500 font-bold flex-shrink-0'>
-                          ({item.menuItems?.length || 0} Items)
-                        </span>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        Will be shipping on {formatTime(item.time)}
-                      </div>
-                    </div>
-                    
-                    {/* Address and Location Pin */}
-                    <div className='flex items-start gap-3 flex-shrink-0'>
-                      <div className='text-sm text-gray-600 text-right max-w-[200px] sm:max-w-[250px] break-words'>
-                        {item.fullAddress?.name || item.fullAddress?.address || 'Address not available'}
-                        {item.fullAddress?.address && item.fullAddress?.name !== item.fullAddress?.address && (
-                          <span>, {item.fullAddress.address}</span>
-                        )}
-                        <span className='text-gray-500'> United Kingdom</span>
-                      </div>
-                      <div className='w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0'>
-                        <MapPin className='h-4 w-4 text-gray-800' />
-                      </div>
-                    </div>
+        </div>
+      </CardContent>
+      <div className='space-y-4 max-h-70 overflow-y-auto px-6'>
+        {displayOrders &&
+          displayOrders.length > 0 &&
+          displayOrders
+            .map((item, index) => (
+            <div
+              key={item._id || index}
+              className='flex items-start gap-4'
+            >
+              {/* Customer Avatar */}
+              <Avatar className='w-12 h-12 flex-shrink-0'>
+                <AvatarFallback className='bg-gray-100 text-gray-600 text-sm font-medium'>
+                  {getCustomerInitials(item.customer?.firstName, item.customer?.lastName)}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Customer Details and Address Container */}
+              <div className='flex-1 flex justify-between items-start min-w-0'>
+                {/* Customer Details */}
+                <div className='flex-1 min-w-0 pr-4'>
+                  <div className='flex items-center gap-2 mb-1 flex-wrap'>
+                    <span className='font-bold text-gray-900 break-words'>
+                      {item.customer?.firstName} {item.customer?.lastName}
+                    </span>
+                    <span className='text-sm text-red-500 font-bold flex-shrink-0'>
+                      ({item.menuItems?.length || 0} Items)
+                    </span>
+                  </div>
+                  <div className='text-sm text-gray-500'>
+                    Will be shipping on {formatTime(item.time)}
                   </div>
                 </div>
-              ))}
-          </div>
-        </div>
+                
+                {/* Address and Location Pin */}
+                <div className='flex items-start gap-3 flex-shrink-0'>
+                  <div className='text-sm text-gray-600 text-right max-w-[200px] sm:max-w-[250px] break-words'>
+                    {item.fullAddress?.name || item.fullAddress?.address || 'Address not available'}
+                    {item.fullAddress?.address && item.fullAddress?.name !== item.fullAddress?.address && (
+                      <span>, {item.fullAddress.address}</span>
+                    )}
+                    <span className='text-gray-500'> United Kingdom</span>
+                  </div>
+                  <div className='w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0'>
+                    <MapPin className='h-4 w-4 text-gray-800' />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
         
-        {/* Show More Button */}
-      </CardContent>
-      <DownArrowButton onClick={() => {}} />
+      {hasMoreOrders && <DownArrowButton onClick={toggleShowAll} active={showAll} />}
     </Card>
   );
 };

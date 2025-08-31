@@ -5,9 +5,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useCustomers } from "@/common/contexts/CustomersContext";
 import DownArrowButton from "./DownArrowButton";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 const CustomersList = () => {
   const { customers, loading, error } = useCustomers();
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   if (loading) {
     return (
@@ -55,8 +61,8 @@ const CustomersList = () => {
           <Plus className="text-white scale-150" />
         </Button>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {customers?.length > 0 && customers?.slice(0, 7).map((customer:any) => (
+      <CardContent className="space-y-4 max-h-100 overflow-y-auto">
+        {customers?.length > 0 && customers?.slice(0, showAll ? customers.length : 7).map((customer:any) => (
           <div key={customer?._id} className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
               <AvatarFallback className="bg-gray-100">
@@ -73,7 +79,7 @@ const CustomersList = () => {
         ))}
       </CardContent>
 
-      <DownArrowButton onClick={() => {}} />
+      <DownArrowButton onClick={toggleShowAll} active={showAll} />
     </Card>
   );
 };

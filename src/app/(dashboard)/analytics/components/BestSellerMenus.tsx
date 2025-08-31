@@ -62,6 +62,11 @@ const menuItems: MenuItem[] = [
 const BestSellerMenus = () => {
   const [data, setData] = useState<ApiResponse>({});
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   const getBestSeller = async () => {
     try {
@@ -89,6 +94,7 @@ const BestSellerMenus = () => {
 
   // Use API data if available, otherwise fall back to mock data
   const displayItems = data?.mostOrderedDishes?.slice(0, 3) || menuItems;
+  const hasMoreItems = (data?.mostOrderedDishes?.length || menuItems.length) > 3;
 
   if (loading) {
     return (
@@ -119,16 +125,16 @@ const BestSellerMenus = () => {
   }
 
   return (
-    <Card className='w-full p-6 bg-white rounded-xl relative'>
-      <div className='mb-6'>
+    <Card className='w-full bg-white rounded-xl relative'>
+      <div className='mb-6 px-6'>
         <h2 className='text-xl font-bold text-gray-900 mb-1'>
           Best Seller Menus
         </h2>
         <p className='text-sm text-gray-500'>Lorem ipsum dolor</p>
       </div>
 
-      <div className='space-y-4'>
-        {displayItems.map((item: MenuItem | ApiMenuItem, index: number) => (
+      <div className='space-y-4 max-h-175 overflow-y-scroll px-6'>
+        {(showAll ? (data?.mostOrderedDishes || menuItems) : displayItems).map((item: MenuItem | ApiMenuItem, index: number) => (
           <div
             key={item.id || index}
             className='rounded-xl hover:bg-gray-50 transition-colors duration-200 cursor-pointer overflow-hidden'
@@ -172,7 +178,7 @@ const BestSellerMenus = () => {
         ))}
       </div>
 
-     <DownArrowButton />
+      {hasMoreItems && <DownArrowButton onClick={toggleShowAll} active={showAll} />}
     </Card>
   );
 };

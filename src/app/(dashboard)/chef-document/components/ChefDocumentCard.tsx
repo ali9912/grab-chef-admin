@@ -80,8 +80,8 @@ const ChefDocumentCard = ({
           />
         </div>
       </TableCell>
-      <TableCell className='text-sm text-gray-600'>
-        <Link href={`/chef/${id}`}>{id.slice(id.length - 4)}</Link>
+      <TableCell className='text-sm text-blue-600'>
+        <Link href={`/chef/${id}`}>#{id.slice(id.length - 4)}</Link>
       </TableCell>
 
       {/* ID Card */}
@@ -115,14 +115,14 @@ const ChefDocumentCard = ({
           >
             View details
           </Button>
-          <Button
+          {/* <Button
             variant='ghost'
             size='icon'
             onClick={onDelete}
             className='w-8 h-8 text-red-500 hover:text-red-600 hover:bg-red-50'
           >
             <XCircle size={16} />
-          </Button>
+          </Button> */}
         </div>
       </TableCell>
     </TableRow>

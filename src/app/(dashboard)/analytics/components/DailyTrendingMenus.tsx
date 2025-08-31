@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import axios from 'axios';
 import { getCookie } from 'cookies-next/client';
 import { useEffect, useState } from 'react';
-
+import DownArrowButton from '../../dashboard/_components/DownArrowButton';
 
 
 interface ApiMenuItem {
@@ -24,6 +24,11 @@ interface ApiResponse {
 const DailyTrendingMenus = () => {
   const [data, setData] = useState<ApiResponse>({});
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   const getBestSeller = async () => {
     try {
@@ -50,6 +55,7 @@ const DailyTrendingMenus = () => {
   }, []);
 
   const displayItems = data?.mostOrderedDishes?.slice(0, 5) || [];
+  const hasMoreItems = (data?.mostOrderedDishes?.length || 0) > 5;
 
   if (loading) {
     return (
@@ -79,16 +85,16 @@ const DailyTrendingMenus = () => {
   }
 
   return (
-    <Card className='w-full p-6 bg-white rounded-xl'>
-      <div className='mb-6'>
+    <Card className='w-full bg-white rounded-xl relative'>
+      <div className='mb-6 px-6'>
         <h2 className='text-xl font-bold text-gray-900 mb-1'>
           Daily Trending Menus
         </h2>
         <p className='text-sm text-gray-500'>Lorem ipsum dolor</p>
       </div>
 
-      <div className='space-y-0'>
-        {displayItems.map((item: ApiMenuItem, index: number) => (
+      <div className='space-y-0 max-h-120 overflow-y-scroll px-6'>
+        {(showAll ? (data?.mostOrderedDishes || []) : displayItems).map((item: ApiMenuItem, index: number) => (
           <div key={item.id || index}>
             <div className='flex items-center space-x-3 py-3 hover:bg-gray-50 transition-colors duration-200 cursor-pointer rounded-lg px-2'>
               <div className='flex-shrink-0'>
@@ -116,12 +122,14 @@ const DailyTrendingMenus = () => {
             </div>
             
             {/* Divider line between items (except for the last item) */}
-            {index < displayItems.length - 1 && (
+            {index < (showAll ? (data?.mostOrderedDishes || []).length : displayItems.length) - 1 && (
               <div className='border-b border-gray-100'></div>
             )}
           </div>
         ))}
       </div>
+
+      {hasMoreItems && <DownArrowButton onClick={toggleShowAll} active={showAll} />}
     </Card>
   );
 };
