@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
 import { BASE_API_URL } from '@/common/constants';
 import { getCookie } from 'cookies-next/client';
+import DownArrowButton from '../../dashboard/_components/DownArrowButton';
 
 interface Customer {
   id: number;
@@ -51,6 +52,11 @@ const customers: Customer[] = [
 
 const LoyalCustomers = () => {
   const [data, setData] = useState([]);
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   const getLoyalCustomers = async () => {
     try {
@@ -69,23 +75,26 @@ const LoyalCustomers = () => {
     getLoyalCustomers();
   }, []);
 
+  // Check if there are more items to show
+  const hasMoreItems = data && data.length > 5;
+
   return (
     <div>
       <div>
         <div>
           <div className='flex justify-center'>
-            <Card className='w-full mx-auto px-6 py-3 bg-white shadow'>
-              <div>
+            <Card className='w-full mx-auto bg-white shadow relative'>
+              <div className='px-6 mb-6'>
                 <h2 className='text-xl font-semibold text-gray-900'>
                   Loyal Customers
                 </h2>
                 {/* <p className='text-sm text-gray-500'>Lorem ipsum dolor</p> */}
               </div>
 
-              <div className='space-y-1'>
+              <div className='space-y-1 max-h-88 overflow-y-scroll px-6'>
                 {data &&
                   data.length &&
-                  data?.slice(0, 5).map((customer:any) => (
+                  (showAll ? data : data?.slice(0, 4)).map((customer:any) => (
                     <div
                       key={customer._id}
                       className='flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer'
@@ -115,6 +124,8 @@ const LoyalCustomers = () => {
                     </div>
                   ))}
               </div>
+
+              {hasMoreItems && <DownArrowButton onClick={toggleShowAll} active={showAll} />}
             </Card>
           </div>
         </div>

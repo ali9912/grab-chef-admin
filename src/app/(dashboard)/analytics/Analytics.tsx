@@ -21,25 +21,30 @@ const Analytics = () => {
         <SummaryCards />
       </div>
       
-      {/* Main Analytics Grid - 4 Columns */}
-      <div className='grid grid-cols-4 gap-4 items-start'>
-        {/* Column 1: Sales Statistics Chart */}
-        <div className='col-span-3 grid grid-cols-3 gap-4'>
-          <div className='col-span-2 flex flex-col gap-4'>
+      {/* Main Analytics Grid - Responsive Layout */}
+      <div className='grid grid-cols-1 lg:grid-cols-4 gap-4 items-start'>
+        {/* Main Content Area */}
+        <div className='lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4'>
+          {/* Top Row - Sales Statistics and Summary */}
+          <div className='md:col-span-2 flex flex-col gap-4'>
             <SalesStatisticsChart />
             <SalesSummary />
           </div>
-          <div className='col-span-1 flex flex-col gap-4'>
+          
+          {/* Right Column - Customer Chart and Loyal Customers */}
+          <div className='md:col-span-1 flex flex-col gap-4'>
             <CustomerBarChart />
             <LoyalCustomers />
           </div>
-          <div className='col-span-3'>
+          
+          {/* Bottom Row - Most Favorites Items */}
+          <div className='md:col-span-3'>
             <MostFavoritesItems />
           </div>
         </div>
         
-        {/* Column 4: Best Seller Menus */}
-        <div className='col-span-1 flex flex-col gap-4'>
+        {/* Sidebar - Best Seller Menus and Trending Menus */}
+        <div className='lg:col-span-1 flex flex-col gap-4'>
           <BestSellerMenus />
           <DailyTrendingMenus />
         </div>

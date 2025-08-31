@@ -10,7 +10,7 @@ const DownArrowButton = ({ onClick, className = "", active }: DownArrowButtonPro
   return (
     <div 
       onClick={onClick} 
-      className={`absolute right-[50%] bottom-0 transform translate-1/2 h-10 w-10 flex items-center justify-center bg-white border text-red-500 shadow-lg rounded-full cursor-pointer ${className}`}
+      className={`absolute right-[50%] bottom-0 transform translate-1/2 h-10 w-10 flex items-center justify-center bg-white border text-red-500 shadow-lg rounded-full cursor-pointer z-10 ${className}`}
     >
       {active ? <ChevronUp /> : <ChevronDown />}
     </div>

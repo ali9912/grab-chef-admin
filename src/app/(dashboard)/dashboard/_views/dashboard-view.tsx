@@ -59,8 +59,8 @@ const DashboardView = () => {
         </div>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div className={cn('col-span-1', 'grid grid-cols-2', 'gap-4')}>
+      <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
+        <div className={cn('col-span-1', 'grid grid-cols-1 sm:grid-cols-2', 'gap-4')}>
           {analyticsData(data).map((item, index) => (
             <AnalyticsCard
               key={index}
@@ -73,7 +73,7 @@ const DashboardView = () => {
 
 
       {/* Main Content Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 xl:grid-cols-4 xl:gap-6 space-y-6'>
         {/* Left Column - 1/4 width */}
         <div className='lg:col-span-1 space-y-6'>
           <TopRatedChefs />
@@ -86,11 +86,11 @@ const DashboardView = () => {
           <AnalyticsBarChart />
           
           {/* Bottom Row */}
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <div className='grid grid-cols-1 xl:grid-cols-3 gap-6'>
             <div className='md:col-span-1'>
               <CustomersList />
             </div>
-            <div className='md:col-span-2'>
+            <div className='xl:col-span-2'>
               <UpcomingShipping />
             </div>
           </div>
