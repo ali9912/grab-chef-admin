@@ -11,7 +11,6 @@ export const useGetAllContracts = (
   end_date?: string,
   search?: string | null,
 ): UseQueryResult<GetAllContractsResponse, AxiosError<{ message: string }>> => {
-  console.log(limit);
   const getContracts = async (): Promise<GetAllContractsResponse> => {
     const response = await api.get(URL.GET_CONTRACTS, {
       params: {

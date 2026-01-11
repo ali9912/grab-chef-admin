@@ -75,7 +75,6 @@ const EditTaxonomyForm: FC<Partial<EditTaxonomyModalProps>> = ({
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: values => {
-      console.log(values);
       const langArray = Object.entries(values.labels)
         .map(([langName, value]) => {
           const lang = data?.languages.find(l => l.contract_name === langName);
@@ -107,7 +106,6 @@ const EditTaxonomyForm: FC<Partial<EditTaxonomyModalProps>> = ({
     },
   });
 
-  console.log(formik.values);
 
   return (
     <>

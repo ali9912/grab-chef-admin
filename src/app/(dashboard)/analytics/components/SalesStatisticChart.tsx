@@ -34,45 +34,6 @@ import {
 import axios from 'axios';
 import { BASE_API_URL } from '@/common/constants';
 
-const data_ = [
-  {
-    name: 'Week 01',
-    Beverages: 100,
-    Food: 120,
-    date: 'Feb 1, 2024',
-  },
-  {
-    name: 'Week 02',
-    Beverages: 45,
-    Food: 60,
-    date: 'Feb 8, 2024',
-  },
-  {
-    name: 'Week 03',
-    Beverages: 95,
-    Food: 75,
-    date: 'Feb 15, 2024',
-  },
-  {
-    name: 'Week 04',
-    Beverages: 115,
-    Food: 85,
-    date: 'Feb 22, 2024',
-  },
-  {
-    name: 'Week 05',
-    Beverages: 40,
-    Food: 25,
-    date: 'Feb 29, 2024',
-  },
-  {
-    name: 'Week 06',
-    Beverages: 0,
-    Food: 95,
-    date: 'Mar 6, 2024',
-  },
-];
-
 const COLORS = {
   Beverages: 'url(#beverageGradient)',
   Food: 'url(#foodGradient)',
@@ -83,7 +44,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const item = payload[0].payload;
     return (
       <div className='bg-white p-3 rounded-xl shadow-md border text-sm'>
-        <p className='font-semibold text-black'>{payload[0].value} Beverages</p>
+        <p className='text-black'>{payload[0].value} Bookings</p>
+        <p className='text-black'>Revenue: PKR {payload[1].value} </p>
         <p className='text-gray-500'>{item.date}</p>
       </div>
     );
@@ -92,10 +54,20 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const SalesStatisticsChart: React.FC = () => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<any>({});
   const [filter, setFilter] = useState('week');
   const [option, setOption] = useState('bookingsAndRevenue');
-  const [counts, setCounts] = useState({});
+  const [counts, setCounts] = useState<{
+    totalBookingsAllTime: number;
+    totalRevenueAllTime: number;
+    totalCustomerCounts: number;
+    totalCuisineCounts: number;
+  }>({
+    totalBookingsAllTime: 0,
+    totalRevenueAllTime: 0,
+    totalCustomerCounts: 0,
+    totalCuisineCounts: 0,
+  });
 
   const getAnalyticsData = async () => {
     try {
@@ -111,7 +83,7 @@ const SalesStatisticsChart: React.FC = () => {
       for (const element in resData?.bookingsAndRevenue) {
         const item = resData?.bookingsAndRevenue[element];
         totalBookingsAllTime = totalBookingsAllTime + item?.totalBookings;
-        totalRevenueAllTime = totalRevenueAllTime + element?.totalRevenue;
+        totalRevenueAllTime = totalRevenueAllTime + item?.totalRevenue;
       }
       for (const element in resData?.newCustomers) {
         const item = resData?.newCustomers[element];
@@ -121,12 +93,6 @@ const SalesStatisticsChart: React.FC = () => {
         const item = resData?.mostOrderedCuisines[element];
         totalCuisineCounts = totalCuisineCounts + item?.count;
       }
-      console.log({
-        totalBookingsAllTime,
-        totalRevenueAllTime,
-        totalCustomerCounts,
-        totalCuisineCounts,
-      });
       setCounts({
         totalBookingsAllTime,
         totalRevenueAllTime,
@@ -142,49 +108,51 @@ const SalesStatisticsChart: React.FC = () => {
     getAnalyticsData();
   }, [filter]);
 
-  const dataKey1 = {
+  const dataKey1: Record<string, string> = {
     bookingsAndRevenue: 'totalBookings',
     newCustomers: 'count',
     mostOrderedCuisines: 'count',
   };
-  const dataKey2 = {
+  const dataKey2: Record<string, string> = {
     bookingsAndRevenue: 'totalRevenue',
   };
 
-  const xAxisKey = {
+  const xAxisKey: Record<string, string> = {
     bookingsAndRevenue: '_id',
     newCustomers: '_id',
     mostOrderedCuisines: '_id',
   };
 
-  const optionKey = {
+  const optionKey: Record<string, string> = {
     bookingsAndRevenue: 'Bookings And Revenue',
     newCustomers: 'New Customers',
     mostOrderedCuisines: 'Most Ordered Cuisines',
   };
-  const filterKey = {
+  const filterKey: Record<string, string> = {
     day: 'Day',
     week: 'Week',
     month: 'Month',
   };
 
-  const legendKey1 = {
+  const legendKey1: Record<string, string> = {
     bookingsAndRevenue: 'Total Bookings',
     newCustomers: 'New Customers',
     mostOrderedCuisines: 'Most Ordered Cuisines',
   };
-  const countKey = {
+  const countKey: Record<string, number> = {
     'Total Bookings': counts.totalBookingsAllTime,
     'New Customers': counts.totalRevenueAllTime,
     'Most Ordered Cuisines': counts.totalCustomerCounts,
     'Total Revenue': counts.totalCuisineCounts,
   };
-  const legendKey2 = {
+  const legendKey2: Record<string, string> = {
     bookingsAndRevenue: 'Total Revenue',
+    newCustomers: 'Total Revenue',
+    mostOrderedCuisines: 'Total Revenue',
   };
 
   return (
-    <div className='bg-white p-6 rounded-2xl shadow w-full max-w-5xl mx-auto'>
+    <div className='bg-white p-6 rounded-2xl shadow w-full'>
       <div className='flex flex-col justify-between items-start mb-6'>
         <div className=' flex items-center justify-between w-full'>
           <div>

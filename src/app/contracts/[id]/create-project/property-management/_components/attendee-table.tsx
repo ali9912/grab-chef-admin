@@ -37,7 +37,6 @@ const AttendeeTable: FC<AttendeeTableProps> = ({
       value: value,
     };
   });
-  console.log({ types });
 
   const columns: ColumnDef<Partial<CreatePropertyResponse>>[] = [
     {

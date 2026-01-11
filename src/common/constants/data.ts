@@ -97,25 +97,25 @@ export const analyticsData = (data: any) => [
     title: 'Total Menus',
     image: '/assets/icons/menu.svg',
     value: `${data['totalMenu']}`,
-    progress: 50,
+    progress: 77,
   },
   {
     title: 'Total Chef',
     image: '/assets/icons/revenue.svg',
     value: ` ${data['totalChef']}`,
-    progress: 100,
+    progress: 25,
   },
   {
     title: 'Total Customers',
     image: '/assets/icons/customer.svg',
     value: `${data['totalCustomer']}`,
-    progress: 20,
+    progress: 53,
   },
   {
     title: 'Total Orders',
     image: '/assets/icons/order.svg',
     value: `${data['totalOrders']}`,
-    progress: 300,
+    progress: 88,
   },
 ];
 
@@ -326,16 +326,17 @@ export const sessionsData = [
 ];
 
 export const areaChartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 73 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
+  { time: '08:00', revenue: 15 },
+  { time: '09:00', revenue: 35 },
+  { time: '10:00', revenue: 50 },
+  { time: '11:00', revenue: 30 },
+  { time: '12:00', revenue: 50 },
+  { time: '13:00', revenue: 15 },
+  { time: '14:00', revenue: 30 },
 ];
 export const areaChartConfig = {
-  desktop: {
-    label: 'Desktop',
+  revenue: {
+    label: 'Revenue',
     color: '#FFC71F',
   },
 } satisfies ChartConfig;

@@ -25,7 +25,6 @@ export const useEditTaxonomy = (
     payload: TaxonomyPayload,
   ): Promise<EditTaxonomyResponse> => {
     const { taxonomy_id, ...rest } = payload;
-    console.log(taxonomy_id);
     const response = await api.patch(
       URL.EDIT_TAXONOMY(id, projectId, payload.taxonomy_id),
       rest,

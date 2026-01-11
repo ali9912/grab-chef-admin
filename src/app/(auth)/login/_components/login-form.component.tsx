@@ -20,12 +20,11 @@ const LoginForm = () => {
       setPending(true);
       const response = await axios.post(`${BASE_API_URL}/admin/login`, data);
       const resData = await response.data;
-      console.log('===resData===>', JSON.stringify(resData, null, 1));
       setCookie('token', resData?.token);
       router.push('/dashboard');
       setPending(false);
     } catch (error: any) {
-      toast(error?.message);
+      toast(error?.response?.data?.message || "Something went wrong");
     } finally {
       setPending(false);
     }
@@ -38,8 +37,6 @@ const LoginForm = () => {
     },
     validationSchema: loginSchema,
     onSubmit: async values => {
-      console.log(values);
-      console.log('first');
       await handleLoginForm(values);
     },
   });

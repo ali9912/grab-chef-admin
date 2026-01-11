@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useCallback, useEffect, useState } from 'react';
 import { getCookie } from 'cookies-next/client';
@@ -37,14 +37,16 @@ const TopRatedChefs = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className='text-lg font-medium'>Top Rated Chefs.</CardTitle>
-        <p className='text-sm text-muted-foreground'>
-          Lorem ipsum dolor sit amet, consectetur
-        </p>
+      <CardHeader className='flex flex-row items-center justify-between'>
+        <div className='flex flex-1 flex-col justify-center gap-1'>
+          <CardTitle>Top Rated Chefs</CardTitle>
+          <CardDescription>
+            Lorem ipsum dolor sit amet, consectetur
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className='space-y-4'>
-        {data.map((chef, index) => (
+        {data.map((chef:any, index) => (
           <div
             key={chef._id}
             className='flex justify-between items-center gap-3'
@@ -55,11 +57,11 @@ const TopRatedChefs = () => {
 
             <div className='flex-1'>
               <div className='font-medium text-lg'>
-                {chef.userId?.firstName + ' ' + chef.userId?.firstName}
+                {`${chef.userId?.firstName} ${chef.userId?.lastName}`}
               </div>
               {/* <p className='text-sm font-bold text-muted-foreground'>$56</p> */}
               <p className='text-sm text-muted-foreground'>
-                Order {chef?.completedOrders}
+                Orders: {chef?.completedOrders}
               </p>
             </div>
             <Avatar>

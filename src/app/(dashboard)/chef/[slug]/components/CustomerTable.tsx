@@ -83,9 +83,9 @@ export const CustomerTable = ({ events }) => {
             </tr>
           </thead>
           <tbody>
-            {events &&
-              events.length &&
-              events.map((event, index) => (
+            {
+              events.length > 0 ?
+              events.map((event:any, index:number) => (
                 <tr
                   key={`${event.id}-${index}`}
                   className={`border-b border-gray-100 hover:bg-gray-50 ${
@@ -127,7 +127,12 @@ export const CustomerTable = ({ events }) => {
                     {event?.fullAddress?.name || 'N/A'}
                   </td>
                 </tr>
-              ))}
+              )) : (
+                <tr className='mt-5'>
+                  <td colSpan={4} className='text-center mt-5'>
+                    <p className='mt-5'>No Events found for this chef</p>
+                    </td></tr>
+              )}
           </tbody>
         </table>
       </div>

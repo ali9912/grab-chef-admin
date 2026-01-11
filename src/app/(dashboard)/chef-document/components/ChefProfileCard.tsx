@@ -1,4 +1,4 @@
-import { X, MapPin } from 'lucide-react';
+import { X, MapPin, ExternalLink, CreditCard, FileText } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,45 +12,70 @@ interface ChefProfileCardProps {
   onClose: () => void;
   chef: any;
 }
-const chef = {
-  firstName: 'Syed Umer Ali',
-  phoneNumber: '+92-332-3196182',
-  email: 'syedumerali9453@gmail.com',
-  achievements: [
-    'silver_medal_icon',
-    'gold_medal_with_ribbons_icon',
-    'gold_medal_icon',
-  ],
-  location: ['DHA Karachi', 'Gulshan-e-Iqbal'],
-  document: {
-    fileName: 'Chef Document',
-    fileType: 'PDF',
-  },
-  chefBio:
-    "Chef ali is a professional chef with more than 11 years of experience in cooking. he has served 4 years in rosati bistro as an assistant chef and served more than 5 years in cafe aylanto as the head chef. graduated from culinary school of karachi and has a bachelor's degree in social sciences. apart from being an amazing chef, he likes to spend time nurturing his cat at home.",
-};
+
 const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
+  const handleOpenDocument = (documentUrl: string, fileName: string) => {
+    console.log('Opening document:', { documentUrl, fileName });
+    if (documentUrl) {
+      window.open(documentUrl, '_blank');
+      console.log('Document opened in new tab');
+    } else {
+      console.log('No document URL provided for:', fileName);
+    }
+  };
+
+  const renderDocumentSection = (documentUrl: string | null, documentType: string, icon: React.ReactNode) => {
+    return (
+      <div className='shadow-lg p-2 rounded-lg'>
+        <label className='block text-sm font-medium text-gray-700 mb-1'>
+          {documentType}
+        </label>
+        <div className=' rounded-md px-3 py-2'>
+          {documentUrl ? (
+            <div className='flex items-center gap-2'>
+              <div className='w-6 h-6 bg-red-500 rounded flex items-center justify-center'>
+                {icon}
+              </div>
+              <span className='text-sm text-gray-900'>{documentType}</span>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => handleOpenDocument(documentUrl, `${documentType.toLowerCase()}.pdf`)}
+                className='p-1 ml-auto'
+              >
+                <ExternalLink size={14} />
+              </Button>
+            </div>
+          ) : (
+            <p className='text-sm text-gray-500'>No {documentType.toLowerCase()} uploaded</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Dialog
       open={isOpen}
       onOpenChange={onClose}
     >
       <DialogContent className=' w-full max-h-[90vh] overflow-y-auto p-0'>
-        <DialogTitle  className="DialogTitle text-2xl pl-8 pt-4">Profile</DialogTitle>
+        <DialogTitle className="DialogTitle text-2xl pl-8 pt-4">Profile</DialogTitle>
         <div className='relative bg-white rounded-lg'>
-          {/* Close Button */}
-         
 
           {/* Profile Header */}
           <div className='p-6 pb-4'>
             <div className='flex items-start gap-4 mb-6'>
-              <img
-                src={
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjKNpeICypw6HglgXH9dwb2Uj4rG0eH9DXcQ&s'
-                }
-                alt={chef.firstName}
-                className='w-20 h-20 rounded-full object-cover'
-              />
+              <div className='w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gray-100'>
+                <img
+                  src={
+                    chef?.profilePicture ||
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjKNpeICypw6HglgXH9dwb2Uj4rG0eH9DXcQ&s'
+                  }
+                  alt={`${chef?.firstName} ${chef?.lastName}`}
+                  className='w-full h-full object-cover'
+                />
+              </div>
             </div>
 
             {/* Profile Details Grid */}
@@ -62,7 +87,19 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
                 </label>
                 <div className=' rounded-md py-2'>
                   <span className='text-sm text-gray-900'>
-                    {chef.firstName}
+                    {chef?.firstName || '-'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Last Name */}
+              <div className='shadow-lg p-2 rounded-lg'>
+                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  Last Name
+                </label>
+                <div className=' rounded-md py-2'>
+                  <span className='text-sm text-gray-900'>
+                    {chef?.lastName || '-'}
                   </span>
                 </div>
               </div>
@@ -74,7 +111,7 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
                 </label>
                 <div className=' rounded-md py-2'>
                   <span className='text-sm text-gray-900'>
-                    {chef.phoneNumber}
+                    {chef?.phoneNumber || '-'}
                   </span>
                 </div>
               </div>
@@ -85,7 +122,7 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
                   Email
                 </label>
                 <div className=' rounded-md  py-2'>
-                  <span className='text-sm text-gray-900'>{chef.email}</span>
+                  <span className='text-sm text-gray-900'>{chef?.email || '-'}</span>
                 </div>
               </div>
 
@@ -128,7 +165,7 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
                   Location
                 </label>
                 <div className=' rounded-md py-2 flex flex-wrap gap-1'>
-                  {chef?.chef?.locations?.map(
+                  {chef?.chef?.locations?.length > 0 ? chef?.chef?.locations?.map(
                     (loc: { name: string }, index: number) => (
                       <span
                         key={index}
@@ -137,26 +174,28 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
                         {loc?.name}
                       </span>
                     ),
+                  ) : (
+                    <p>-</p>
                   )}
                 </div>
               </div>
+            </div>
 
-              {/* Document */}
-              <div className='shadow-lg p-2 rounded-lg'>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
-                  Document
-                </label>
-                <div className=' rounded-md px-3 py-2'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-sm text-gray-900'>ABC</span>
-                    <div className='w-6 h-6 bg-red-500 rounded flex items-center justify-center'>
-                      <span className='text-white text-xs font-medium'>
-                        PDF
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Documents Section */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+              {/* ID Card */}
+              {renderDocumentSection(
+                chef?.chef?.idCard,
+                'ID Card',
+                <CreditCard className='text-white text-xs' size={16} />
+              )}
+
+              {/* Certificates */}
+              {renderDocumentSection(
+                chef?.chef?.certificates,
+                'Certificates',
+                <FileText className='text-white text-xs' size={16} />
+              )}
             </div>
 
             {/* Chef Bio */}
@@ -166,7 +205,7 @@ const ChefProfileCard = ({ isOpen, onClose, chef }: ChefProfileCardProps) => {
               </label>
               <div className=' rounded-md p-3'>
                 <p className='text-sm text-gray-700 leading-relaxed'>
-                  {chef?.chef?.bio}
+                  {chef?.chef?.bio || 'No bio available'}
                 </p>
               </div>
             </div>

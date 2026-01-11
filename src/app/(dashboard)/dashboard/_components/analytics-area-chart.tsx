@@ -4,8 +4,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Pie,
-  PieChart,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -16,132 +14,218 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { cn } from '@/lib/utils';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { getCookie } from 'cookies-next/client';
+import axios from 'axios';
+import { BASE_API_URL } from '@/common/constants';
+
+interface RevenueStatsResponse {
+  todayRevenue: number;
+  yesterdayRevenue: number;
+  percentageChange: number;
+  trend: 'increase' | 'decrease' | 'no change';
+  monthlyRevenue: Array<{
+    month: string;
+    total: number;
+  }>;
+}
 
 interface ChartDataProps {
   chartData: {
     month: string;
-    desktop: number;
+    revenue: number;
   }[];
 }
 
-export function AreaChartComponent({
-  chartConfig,
-  chartData,
-}: {
-  chartConfig: ChartConfig;
-  chartData: ChartDataProps['chartData'];
-}) {
+export function AreaChartComponent() {
+  const [revenueData, setRevenueData] = useState<RevenueStatsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const getRevenueStats = async () => {
+    try {
+      setLoading(true);
+      const token = getCookie('token');
+      const response = await axios.get(
+        `${BASE_API_URL}/admin/get-revenue-stats`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRevenueData(response.data);
+    } catch (error: any) {
+      setError(error?.message || 'Failed to fetch revenue data');
+      console.error('Revenue stats error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRevenueStats();
+  }, []);
+
+  // Transform monthly revenue data for chart
+  const chartData = revenueData?.monthlyRevenue?.map(item => ({
+    month: item.month,
+    revenue: item.total
+  })) || [];
+
+  const chartConfig = {
+    revenue: {
+      label: 'Revenue',
+      color: '#FFC71F',
+    },
+  };
+
+  if (loading) {
+    return (
+      <Card className="relative">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div className='flex flex-1 flex-col justify-center gap-1'>
+            <CardTitle>Today's Revenue</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Lorem ipsum dolor sit amet, consectetur
+            </CardDescription>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">Loading...</div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[180px] w-full flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="relative">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div className='flex flex-1 flex-col justify-center gap-1'>
+            <CardTitle>Today's Revenue</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Lorem ipsum dolor sit amet, consectetur
+            </CardDescription>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">Error</div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[180px] w-full flex items-center justify-center text-red-500">
+            Failed to load revenue data
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const getTrendColor = (trend: string) => {
+    switch (trend) {
+      case 'increase':
+        return 'text-green-600';
+      case 'decrease':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'increase':
+        return '↗';
+      case 'decrease':
+        return '↘';
+      default:
+        return '→';
+    }
+  };
+  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Todays Revenue</CardTitle>
-        <CardDescription>
-          Lorem ipsum dolor sit amet, consectetur
-        </CardDescription>
+    <Card className="relative">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className='flex flex-1 flex-col justify-center gap-1'>
+          <CardTitle>Today's Revenue</CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
+            Lorem ipsum dolor sit amet, consectetur
+          </CardDescription>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold">
+            PKR {revenueData?.todayRevenue?.toFixed(2) || '0.00'}
+          </div>
+          <div className={`text-xs ${getTrendColor(revenueData?.trend || 'no change')}`}>
+            {getTrendIcon(revenueData?.trend || 'no change')} {revenueData?.percentageChange?.toFixed(1) || '0'}% than last day
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer 
+          config={chartConfig}
+          className="h-[180px] w-full"
+        >
           <AreaChart
             accessibilityLayer
             data={chartData}
             margin={{
               left: 12,
               right: 12,
+              top: 8,
+              bottom: 8,
             }}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid 
+              vertical={true} 
+              horizontal={true}
+              strokeDasharray="3 3"
+              stroke="#f0f0f0"
+            />
             <XAxis
               dataKey='month'
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={value => value.slice(0, 3)}
+              tick={{ fontSize: 12, fill: '#666' }}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
-            {/* <YAxis
-              dataKey='month'
+            <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={value => value.slice(0, 3)}
-            /> */}
+              tick={{ fontSize: 12, fill: '#666' }}
+              tickFormatter={(value) => value}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator='line' />}
             />
+            <defs>
+              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="50%" stopColor="#ffc720" stopOpacity={1}/>
+                <stop offset="100%" stopColor="#ffc720" stopOpacity={0.2}/>
+              </linearGradient>
+            </defs>
             <Area
-              dataKey='desktop'
-              type='natural'
-              fill='var(--color-desktop)'
-              fillOpacity={0.4}
-              stroke='var(--color-desktop)'
+              dataKey='revenue'
+              type='bump'
+              fill='url(#revenueGradient)'
+              strokeWidth={0}
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>
-    // <div className='flex flex-col bg-[#F9FAFB] rounded-[8px] pb-4'>
-    //   <div className='p-4 flex items-center justify-between'>
-    //     <p className='text-[18px] font-medium text-[#666566]'>
-    //       New Registrations
-    //     </p>
-    //     <Select defaultValue={'daily'}>
-    //       <SelectTrigger
-    //         className={cn(
-    //           'w-[100px]',
-    //           'border-[#DCE0E5] focus-visible:border-[#DCE0E5]',
-    //           'focus-visible:ring-offset-0 focus-visible:ring-0',
-    //         )}
-    //       >
-    //         <SelectValue placeholder='Select Period' />
-    //       </SelectTrigger>
-    //       <SelectContent>
-    //         <SelectItem value='daily'>Daily</SelectItem>
-    //         <SelectItem value='weekly'>Weekly</SelectItem>
-    //         <SelectItem value='monthly'>Monthly</SelectItem>
-    //       </SelectContent>
-    //     </Select>
-    //   </div>
-    //   <div className='grid grid-cols-1 sm:grid-cols-9 md:grid-cols-1 xl:grid-cols-9'>
-    //     <div className='col-span-4 flex items-center justify-center'>
-    //       <ChartContainer
-    //         config={chartConfig}
-    //         className='max-h-[250px] h-[250px] w-[250px]'
-    //       >
-    //         <PieChart>
-    //           <ChartTooltip
-    //             cursor={false}
-    //             content={<ChartTooltipContent hideLabel />}
-    //           />
-    //           <Pie
-    //             data={chartData}
-    //             dataKey='visitors'
-    //             nameKey='browser'
-    //             innerRadius={60}
-    //             strokeWidth={5}
-    //           ></Pie>
-    //         </PieChart>
-    //       </ChartContainer>
-    //     </div>
-    //     <div className='flex flex-col justify-center col-span-5 px-4'>
-    //       <CustomChartLegend chartData={chartData} />
-    //     </div>
-    //   </div>
-    // </div>
   );
 }

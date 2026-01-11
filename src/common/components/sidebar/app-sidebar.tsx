@@ -21,7 +21,6 @@ import { usePathname } from 'next/navigation';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  console.log(pathname);
 
   return (
     <Sidebar

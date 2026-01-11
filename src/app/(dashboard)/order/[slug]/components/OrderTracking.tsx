@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { getData } from '@/api/api';
 import { urls } from '@/api/urls';
 import { useParams } from 'next/navigation';
+import CustomerFavoriteChefs from '@/app/(dashboard)/dashboard/_components/CustomerFavoriteChefs';
 
 const OrderTracking = () => {
   const [details, setDetails ] = useState<any>(null)
@@ -24,68 +25,15 @@ const OrderTracking = () => {
     durationMinutes:0
   })
   const params = useParams()
-  const orderData = {
-    orderId: "#001234124",
-    status: "Chef on the way",
-    estimatedTime: "10-14 Min",
-    customer: {
-      name: "Usama Muzamil",
-      phone: "+91 952 66 77",
-      address: "DHA Phase 5 Commercial Bukhari",
-      date: "25 July 2024",
-      time: "17:00"
-    },
-    items: [
-      {
-        id: 1,
-        name: "Chicken curry special with cucumber",
-        category: "MAIN COURSE",
-        quantity: 3,
-        price: 14.99,
-        total: 44.97,
-        rating: 4,
-        reviews: 142,
-        image: "/placeholder.svg?height=60&width=60"
-      },
-      {
-        id: 2,
-        name: "Italiano pizza with garlic",
-        category: "MAIN COURSE",
-        quantity: 1,
-        price: 15.44,
-        total: 15.44,
-        rating: 4,
-        reviews: 156,
-        image: "/placeholder.svg?height=60&width=60"
-      },
-      {
-        id: 3,
-        name: "Watermelon juice with ice",
-        category: "MAIN COURSE",
-        quantity: 1,
-        price: 4.12,
-        total: 4.12,
-        rating: 4,
-        reviews: 456,
-        image: "/placeholder.svg?height=60&width=60"
-      }
-    ],
-    pricing: {
-      subtotal: 1500,
-      deliveryFee: 400,
-      total: 1900
-    }
-  };
-
-  console.log(details,'--->')
+  const [customerFavoriteChefs, setCustomerFavoriteChefs] = useState<any>([])
   const getOrderDetails = async () => {
     try {
       if(params?.slug){
         const data = await getData(urls.order.getOrder(params?.slug as string))
         const attendenceData = await getData(urls.order?.getAttendence(params?.slug as string))
         setAttendence(attendenceData)
-        console.log(attendence,'---->')
         setDetails(data?.event)
+        setCustomerFavoriteChefs(data?.customerFavoriteChefs)
       }
     } catch (error:any) {
       console.log(error?.message)
@@ -124,7 +72,7 @@ const OrderTracking = () => {
             {/* Delivery Map */}
             <div>
               <div className="p-0">
-                <DeliveryMap data={attendence?.attendance}/>
+                <DeliveryMap data={attendence?.attendance} address={details?.fullAddress}/>
               </div>
             </div>
 
@@ -161,10 +109,8 @@ const OrderTracking = () => {
             {/* Estimated Time */}
             <CustomerOrderCard data={details}/>
 
-            {/* Order Items */}
-
             {/* Order Analytics */}
-            {/* <OrderAnalytics data={details} /> */}
+            <CustomerFavoriteChefs customerFavoriteChefs={customerFavoriteChefs} />
           </div>
         </div>
       </div>

@@ -81,7 +81,6 @@ const ChefRequest = () => {
     } else {
       temp.splice(index, 1);
     }
-    console.log({ temp });
     setSelected(temp);
   };
 

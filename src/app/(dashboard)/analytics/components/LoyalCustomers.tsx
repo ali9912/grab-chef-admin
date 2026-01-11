@@ -60,7 +60,6 @@ const LoyalCustomers = () => {
       });
       const resData = res.data;
       setData(resData);
-      console.log('===resData===>', JSON.stringify(resData, null, 1));
     } catch (error) {
       console.log('error', error);
     }
@@ -72,21 +71,21 @@ const LoyalCustomers = () => {
 
   return (
     <div>
-      <div className=' mt-4'>
+      <div>
         <div>
           <div className='flex justify-center'>
-            <Card className='w-full mx-auto px-6 py-4 bg-white shadow-lg'>
-              <div className='mb-2'>
-                <h2 className='text-xl font-semibold text-gray-900 mb-1'>
+            <Card className='w-full mx-auto px-6 py-3 bg-white shadow'>
+              <div>
+                <h2 className='text-xl font-semibold text-gray-900'>
                   Loyal Customers
                 </h2>
                 {/* <p className='text-sm text-gray-500'>Lorem ipsum dolor</p> */}
               </div>
 
-              <div className='space-y-4'>
+              <div className='space-y-1'>
                 {data &&
                   data.length &&
-                  data?.slice(0, 5).map(customer => (
+                  data?.slice(0, 5).map((customer:any) => (
                     <div
                       key={customer._id}
                       className='flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer'

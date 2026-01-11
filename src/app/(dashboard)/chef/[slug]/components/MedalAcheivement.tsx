@@ -50,8 +50,8 @@ export const MedalsAchievement = ({ data }) => {
           Medals Achievement
         </CardTitle>
       </CardHeader>
-      {!data && data?.length === 0 ? (
-        <p className='text-center'>No Achievements</p>
+      {data?.length === 0 ? (
+        <p className='text-center h-32 flex justify-center items-center'>No Achievements</p>
       ) : (
         <CardContent>
           <Carousel
